@@ -5,8 +5,9 @@ RUN set -x \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y gosu xdg-user-dirs curl jq tzdata --no-install-recommends \
  && rm -rf /var/lib/apt/lists/* \
- && useradd -ms /bin/bash steam \
- && gosu nobody true
+ && useradd -ms /bin/bash steam
+
+EXPOSE 7777/udp 7777/tcp
 
 RUN mkdir -p /config \
  && chown steam:steam /config
@@ -16,6 +17,8 @@ COPY --chown=steam:steam run.sh /home/steam/
 
 HEALTHCHECK --timeout=10s --start-period=180s \
   CMD bash /healthcheck.sh
+
+User steam
 
 WORKDIR /config
 
@@ -44,7 +47,5 @@ ENV AUTOSAVENUM="5" \
     VMOVERRIDE="false"
 
 STOPSIGNAL SIGINT
-
-EXPOSE 7777/udp 7777/tcp
 
 ENTRYPOINT [ "/init.sh" ]
